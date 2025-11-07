@@ -305,7 +305,9 @@ public class FitnessRecordUI extends JFrame {
     private void addExerciseFormat(JPanel addExercisePanel) {
 
         for (int i = 0; i < labels.length; i++) {
-            addExercisePanel.add(new JLabel(labels[i]));
+            JLabel label = new JLabel(labels[i]);
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+            addExercisePanel.add(label);
             
             if (i == 0) {
                 nameField = new JTextField();

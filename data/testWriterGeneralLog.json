@@ -1,0 +1,31 @@
+[
+    {
+        "date": "2025/11/01",
+        "exercises": [
+            {
+                "number of Sets": 3,
+                "muscle Type": "CHEST",
+                "number of Repetitions": 5,
+                "exercise name": "Bench press",
+                "weight": 135
+            },
+            {
+                "number of Sets": 4,
+                "muscle Type": "BACK",
+                "number of Repetitions": 8,
+                "exercise name": "Pull down",
+                "weight": 120
+            }
+        ]
+    },
+    {
+        "date": "2025/11/03",
+        "exercises": [{
+            "number of Sets": 3,
+            "muscle Type": "LEGS",
+            "number of Repetitions": 5,
+            "exercise name": "Squat",
+            "weight": 225
+        }]
+    }
+]

@@ -1,18 +1,13 @@
 package persistence;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-
 import model.Exercise;
-import model.Log;
+import model.Logbook;
 import model.Muscles;
+import model.WorkoutSession;
 
 // Referenced from JsonSerialization Demo
 // https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo
@@ -21,71 +16,68 @@ public class JsonWriterTest extends JsonTest {
     public void testWriterInvalidFile() {
         
         try {
-            JsonWriter writer = new JsonWriter("./data/my\0illegal:fileName.json");
-            writer.open();
+            Logbook lb = new Logbook("./data/my\0illegal:fileName.json");
+            lb.saveLogBook();
             fail("IOException was expected");
         } catch (IOException e) {
-            File file = new File("./data/my\\0illegal:fileName.json");
-            assertFalse(file.exists());
+            // pass
         }
     }
 
     @Test
     public void testWriterEmptyLog() {
         try {
-            JsonWriter writer = new JsonWriter("./data/testReaderEmptyLog.json");
-            
-            JSONArray jsonArray = new JSONArray();
+            Logbook lb = new Logbook("./data/testReaderEmptyLog.json");
+            lb.saveLogBook(); // this saves an empty logbook: []
 
-            writer.open();
-            writer.write(jsonArray);
-            writer.close();
-
+            // now read it back to confirm
             JsonReader reader = new JsonReader("./data/testReaderEmptyLog.json");
-            List<Log> logs = reader.read();
-            assertTrue(logs.isEmpty());
+            List<WorkoutSession> sessions = reader.read();
+            assertTrue(sessions.isEmpty());
         } catch (IOException e) {
             fail("Exception should not have been thrown");
         }
     }
     
     @Test
-    public void testWriterWithNullExerciseAndDate() {
-        Log log = new Log();
-        JSONObject json = log.toJson();
-
-        assertEquals(JSONObject.NULL, json.get("exercise"));
-        assertEquals(JSONObject.NULL, json.get("date"));
-    }
-
-    @Test
-    public void testWriterGenral() {
+    public void testWriterGenralLogbook() {
         try {
-            Exercise exercise1 = new Exercise("Bench press", Muscles.CHEST, 100, 3, 12);
-            Exercise exercise2 = new Exercise("Shoulder press", Muscles.SHOULDERS, 50, 4, 11);
-            Log log1 = new Log(exercise1, "2024/10/22");
-            Log log2 = new Log(exercise2, "2024/10/20");
-            log1.addLogToExercisesList();
-            log2.addLogToExercisesList();
+            Logbook lb = new Logbook("./data/testWriterGeneralLog.json");
 
-            JsonWriter writer = new JsonWriter("./data/testWriterGeneral.json");
-            writer.open();
-            List<Log> logs = new Log().getAllExercisesLog();
-            JSONArray jsonArray = new JSONArray();
+            // create and add session 1
+            WorkoutSession s1 = new WorkoutSession("2025/11/01");
+            s1.addExercise(new Exercise("Bench press", Muscles.CHEST, 135, 3, 5));
+            s1.addExercise(new Exercise("Pull down", Muscles.BACK, 120, 4, 8));
+            lb.addSession(s1);
 
-            for (Log l: logs) {
-                jsonArray.put(l.toJson());
-            }
+            // create and add session 2
+            WorkoutSession s2 = new WorkoutSession("2025/11/03");
+            s2.addExercise(new Exercise("Squat", Muscles.LEGS, 225, 3, 5));
+            lb.addSession(s2);
 
-            writer.write(jsonArray);
-            writer.close();
+            // save the logbook - this is the method to test
+            lb.saveLogBook();
 
-            JsonReader reader = new JsonReader("./data/testWriterGeneral.json");
-            List<Log> logs2 = reader.read();
-            checkExercise(logs2.get(0), "Bench press", Muscles.CHEST, 100, 3, 12);
-            checkExercise(logs2.get(1), "Shoulder press", Muscles.SHOULDERS, 50, 4, 11);
+            // now read it back and verify
+            JsonReader reader = new JsonReader("./data/testWriterGeneralLog.json");
+            List<WorkoutSession> sessions = reader.read();
+            assertEquals(2, sessions.size());
+
+            // check session 1
+            WorkoutSession session1 = sessions.get(0);
+            assertEquals("2025/11/01", session1.getDate());
+            assertEquals(2, session1.getExercises().size());
+            checkExercise(session1.getExercises().get(0), "Bench press", Muscles.CHEST, 135, 3, 5);
+            checkExercise(session1.getExercises().get(1), "Pull down", Muscles.BACK, 120, 4, 8);
+
+            // check session 2
+            WorkoutSession session2 = sessions.get(1);
+            assertEquals("2025/11/03", session2.getDate());
+            assertEquals(1, session2.getExercises().size());
+            checkExercise(session2.getExercises().get(0), "Squat", Muscles.LEGS, 225, 3, 5);
+
         } catch (IOException e) {
-            fail("Exception should not have been thrown");
+            fail("Exception should not have been thrown: " + e.getMessage());
         }
     }
 }

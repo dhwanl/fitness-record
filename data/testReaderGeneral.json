@@ -1,29 +1,31 @@
 [
     {
         "date": "2025/10/01",
-        "exercise": {
-            "exercise name": "Bench press",
-            "muscle Type" : "CHEST",
-            "weight": 100,
-            "number of sets": 3,
-            "number of Repetitions": 12
-        }
+        "exercises": [
+            {
+                "exercise name": "Bench press",
+                "muscle Type" : "CHEST",
+                "weight": 100,
+                "number of Sets": 3,
+                "number of Repetitions": 12
+            }
+        ]
     },
     {
         "date": "2025/10/03",
-        "exercise": [
+        "exercises": [
             {
                 "exercise name": "Squat",
                 "muscle Type": "LEGS",
                 "weight": 200,
-                "number of sets": 3,
+                "number of Sets": 3,
                 "number of Repetitions": 5
             },
             {
                 "exercise name": "Leg press",
                 "muscle Type": "LEGS",
                 "weight": 300,
-                "number of sets": 4,
+                "number of Sets": 4,
                 "number of Repetitions": 10
             }
         ]

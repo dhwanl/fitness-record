@@ -14,12 +14,19 @@ public class ExerciseTest {
     }
 
     @Test
-    void testConstrutor() {
+    void testConstrutorSimple() {
+        // tests the simple constructor and the capitalization
         assertEquals("Leg extension", exercise.getExerciseName());
-        assertEquals("LEGS", exercise.getMuscleType().toString());
+        assertEquals(Muscles.LEGS, exercise.getMuscleType());
+        assertEquals(0, exercise.getWeightLifted());
+        assertEquals(0, exercise.getNumSets());
+        assertEquals(0, exercise.getNumReps());
+    }
 
+    @Test
+    void testConstrutorFull() {
+        // tests the full constructor and capitalization
         exercise = new Exercise("Incline bench press", Muscles.CHEST, 60, 4, 10);
-        assertEquals("Incline bench press", exercise.getExerciseName());
         assertEquals(Muscles.CHEST, exercise.getMuscleType());
         assertEquals(60, exercise.getWeightLifted());
         assertEquals(4, exercise.getNumSets());
@@ -28,14 +35,19 @@ public class ExerciseTest {
 
     @Test
     void testSetmethods() {
+        // tests capitalization in setExerciseName
         exercise.setExerciseName("shoulder press");
         assertEquals("Shoulder press", exercise.getExerciseName());
+        
         exercise.setMuscleType(Muscles.SHOULDERS);
-        assertEquals("SHOULDERS", Muscles.SHOULDERS.toString());
+        assertEquals(Muscles.SHOULDERS, exercise.getMuscleType());
+        
         exercise.setNumReps(10);
         assertEquals(10, exercise.getNumReps());
+        
         exercise.setNumSets(3);
         assertEquals(3, exercise.getNumSets());
+        
         exercise.setWeightLifted(40);
         assertEquals(40, exercise.getWeightLifted());
     }

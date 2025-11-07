@@ -65,17 +65,18 @@ public class FitnessRecordUI extends JFrame {
         parentFrame.setSize(WIDTH, HEIGHT);
         parentFrame.setLayout(new BorderLayout());
         
+        // Confirm Exit code
         JRootPane rootPane = parentFrame.getRootPane();
         InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         ActionMap actionMap = rootPane.getActionMap();
         KeyStroke escapeKey = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         
-        inputMap.put(escapeKey, "EXIT_PROGRAM");
-        actionMap.put("EXIT_PROGRAM", new AbstractAction() {
+        inputMap.put(escapeKey, "CONFIRM_EXIT");
+        actionMap.put("CONFIRM_EXIT", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PrintEventLog.printEventLog();
-                System.exit(0);
+                // call a new confirmation method
+                confirmExit();
             }
         });
 
@@ -93,6 +94,41 @@ public class FitnessRecordUI extends JFrame {
         parentFrame.setVisible(true);
     }
 
+    /*
+     * Displays a confirmation dialog before exiting this application.
+     * Handles user's "Yes" (Enter), "No", or ESC key presses.
+     */
+    private void confirmExit() {
+        String message = "Just double check! would you like to close this application?";
+        String title = "Confirm Exit";
+
+        // define our custom button text
+        Object[] options = {"Yes", "No"};
+
+        // This creates the "Yes/No" pop-uo
+        int result = JOptionPane.showOptionDialog(
+            parentFrame,                            // center it on the main window
+            message,                                // the custom message above
+            title,                                  // the window title
+            JOptionPane.YES_NO_CANCEL_OPTION,       // the "Yes" and "No" buttons
+            JOptionPane.QUESTION_MESSAGE,           // shows a question mark icon
+            null,                              // icon (null for default)
+            options,                                // use our custom button array ("Yes", "No")
+            options[0]                              // The default button to be highlighted ("Yes")
+        );
+
+        // check which button was pressed
+        // YES_OPTION == 0, NO_OPTION == 1
+        if (result == JOptionPane.YES_OPTION) {
+            // user clicked "Yes" or pressed ENTER
+            PrintEventLog.printEventLog();
+            System.exit(0);
+        }
+
+        // If user clicks "No" (result == 1)
+        // or presses ESC/ clicks the [x] button (result == -1)
+        // the dialog simply closes and nothing happens
+    }
     /*
      * MODIFIES: this
      * EFFECTS: creates and adds the option button panel to the main frame

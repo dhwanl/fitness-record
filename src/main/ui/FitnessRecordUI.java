@@ -185,12 +185,13 @@ public class FitnessRecordUI extends JFrame {
      */
     private void addExercise() {
         createDisplayLog();
-        JDialog dialog = createDialog("Add Exercise", 400, 400);
+        JDialog dialog = createDialog("Add Exercise", 400, 320);
         
         JPanel addExercisePanel = new JPanel();
-        addExercisePanel.setLayout(new GridLayout(labels.length, 2));
-        addExercisePanel.setBorder(new EmptyBorder(10, 5, 10, 5));
-        
+        // use BorderLayout for the main panel (10px horizontal gap)
+        addExercisePanel.setLayout(new BorderLayout(10, 0));
+
+        // call the helper to build and add the sub-panels
         addExerciseFormat(addExercisePanel);
         
         dialog.add(addExercisePanel, BorderLayout.CENTER);
@@ -335,35 +336,114 @@ public class FitnessRecordUI extends JFrame {
 
     /*
      * REQUIRES: addExercisePanel != null
-     * MODIFIES: this
-     * EFFECTS: adds input field to the specified panel for adding a new exercise
+     * MODIFIES: this, addExercisePanel
+     * EFFECTS: creates two panels(one for labels, one for fields) and 
+     * adds them to the main addExercisePanel
      */
     private void addExerciseFormat(JPanel addExercisePanel) {
 
-        for (int i = 0; i < labels.length; i++) {
-            JLabel label = new JLabel(labels[i]);
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-            addExercisePanel.add(label);
-            
-            if (i == 0) {
-                nameField = new JTextField();
-                addExercisePanel.add(nameField);
-            } else if (i == 1) {
-                muscleComboBox = createMuscleCombo();
-                addExercisePanel.add(muscleComboBox);
-            } else if (i == 2) {
-                weightField = new JTextField();
-                addExercisePanel.add(weightField);
-            } else if (i == 3) {
-                repsField = new JTextField();
-                addExercisePanel.add(repsField);
-            } else if (i == 4) {
-                setsField = new JTextField();
-                addExercisePanel.add(setsField);
-            } else if (i == 5) {
-                getDate(addExercisePanel);
-            }
+        // creates the panel for labels (on the west)
+        // (GridLayout with 1 column, and a 10px vertical gap for padding)
+        JPanel labelPanel = new JPanel(new GridLayout(labels.length, 1, 0, 10));
+        labelPanel.setBorder(new EmptyBorder(10, 5, 10, 5)); //10px padding all around
+        addExercisePanel.add(labelPanel, BorderLayout.WEST);
+
+        // creates the panel for input fields (in the center)
+        // (GridLayout with 1 column, and a 10px vertical gap for padding)
+        JPanel fieldPanel = new JPanel(new GridLayout(labels.length, 1, 0, 10));
+        fieldPanel.setBorder(new EmptyBorder(10, 5, 10, 10)); // 10px padding
+        addExercisePanel.add(fieldPanel, BorderLayout.CENTER);
+
+        // creates and add all the labels to the labelPanel
+        for (String labelText : labels) {
+            JLabel label = new JLabel(labelText);
+            label.setHorizontalAlignment(SwingConstants.RIGHT);
+            labelPanel.add(label);
         }
+
+        // creates and add all the input fields to the fieldPanel
+        // Exercise Name
+        nameField = new JTextField();
+        fieldPanel.add(nameField);
+
+        // Muscle Type
+        muscleComboBox = createMuscleCombo();
+        fieldPanel.add(muscleComboBox);
+
+        // Weight
+        weightField = new JTextField();
+        fieldPanel.add(weightField);
+
+        // Reps
+        repsField = new JTextField();
+        fieldPanel.add(repsField);
+
+        // Sets
+        setsField = new JTextField();
+        fieldPanel.add(setsField);
+
+        // Date 
+        fieldPanel.add(createDatePanel());
+    }
+
+    /*
+     * EFFECTS: creates and returns a date panel with placeholder text
+     */
+    private JPanel createDatePanel() {
+        yearField = new JTextField();
+        monthField = new JTextField();
+        dayField = new JTextField();
+
+        // apply the placeholder behavior to each field
+        addPlaceHolderFocusListener(yearField, "YYYY");
+        addPlaceHolderFocusListener(monthField, "MM");
+        addPlaceHolderFocusListener(dayField, "DD");
+
+        JPanel datePanel = new JPanel();
+        // 1 row, 3 columns, 5px horizontal gap, 0px vertical gap
+        datePanel.setLayout(new GridLayout(1, 3, 5, 0));
+        datePanel.add(yearField);
+        datePanel.add(monthField);
+        datePanel.add(dayField);
+
+        return datePanel;
+    }
+
+    /*
+     * adds placeholder behavior to a JTextField.
+     * When the user clicks in, the placeholder disappears.
+     * When the user clicks out, it reappears if the field is empty.
+     * @param field       The text field to modify.
+     * @param placeholder The placeholder text(e.g., "YYYY")
+     */
+    private void addPlaceHolderFocusListener(JTextField field, String placeholder) {
+        // sets the field's starting text and color
+        field.setText(placeholder);
+        field.setForeground(Color.GRAY);
+
+        // adds the FocusListener to watch for clicks
+        field.addFocusListener(new FocusListener() {
+            
+            @Override
+            public void focusGained(FocusEvent e) {
+                // When the user clicks IN:
+                // check if the text is still the placeholder
+                if (field.getText().equals(placeholder)) {
+                    field.setText("");
+                    field.setForeground(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                // When the user clicks OUT:
+                // check if the field is now empty
+                if (field.getText().isEmpty()) {
+                    field.setText(placeholder);
+                    field.setForeground(Color.GRAY);
+                }
+            }
+        });
     }
 
     /*
